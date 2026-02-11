@@ -23,8 +23,8 @@ public class OpenAPIConfig {
                 .version("v1.0.0"));
         openAPI.servers(List.of(
                 new Server()
-                        .url("http://localhost:8080")
-                        .description("개발용 서버")
+                        .url("https://api.thewordi.kr")
+                        .description("api서버")
         ));
         return openAPI;
 
