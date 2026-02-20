@@ -50,10 +50,11 @@ public class BibleController {
     public ResponseEntity<List<BibleVerseResponse>> getVerses(@RequestParam List<String> versionIds,
                                                                         @RequestParam int bookId,
                                                                         @RequestParam int chapter,
-                                                                        @RequestParam(required = false) Integer verse)
+                                                                        @RequestParam(required = false) Integer verse,
+                                                                        @RequestParam(required = false) Integer verseTo)
     {
         return ResponseEntity.ok(bibleService.getVersesByVersions(
-                versionIds, bookId, chapter, verse
+                versionIds, bookId, chapter, verse, verseTo
         ));
     }
 

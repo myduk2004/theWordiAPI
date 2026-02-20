@@ -69,10 +69,11 @@ public class BibleService {
     public List<BibleVerseResponse> getVersesByVersions(List<String> versionIds,
                                                         int bookId,
                                                         int chapter,
-                                                        Integer verse)
+                                                        Integer verse,
+                                                        Integer verseTo)
     {
         //1. DB조회
-        List<BibleVerseRow> rows = verseRepository.findVerseByVersions(versionIds, bookId, chapter, verse);
+        List<BibleVerseRow> rows = verseRepository.findVerseByVersions(versionIds, bookId, chapter, verse, verseTo);
 
 
         //2. versionId 기준 Grouping(순서유지)

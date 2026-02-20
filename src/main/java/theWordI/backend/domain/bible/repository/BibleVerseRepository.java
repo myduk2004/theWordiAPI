@@ -29,14 +29,15 @@ public interface BibleVerseRepository extends JpaRepository<BibleVerse, Long> {
             where a.versionId in :versionIds
             	and b.bookId = :bookId
             	and b.chapter = :chapter
-            	and (:verse is null OR b.verse >= :verse)
+            	and b.verse between COALESCE(:verse , b.verse) and COALESCE(:verseTo, b.verse)
             order by a.orderNo, a.versionId, b.bookId, b.chapter, b.verse
             """)
     List<BibleVerseRow> findVerseByVersions(
             @Param("versionIds") List<String> versionIds,
             @Param("bookId") int bookId,
             @Param("chapter") int chapter,
-            @Param("verse") Integer verse
+            @Param("verse") Integer verse,
+            @Param("verseTo") Integer verseTo
     );
 
 
