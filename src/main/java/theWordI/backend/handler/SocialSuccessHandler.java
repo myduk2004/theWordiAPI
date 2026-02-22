@@ -39,7 +39,7 @@ public class SocialSuccessHandler implements AuthenticationSuccessHandler {
 
             CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
             Long userId = principal.getUserId();
-            String role = principal.getAuthorities().iterator().next().getAuthority();
+            //String role = principal.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
 
 
             //1.JWT(Refresh) 발급

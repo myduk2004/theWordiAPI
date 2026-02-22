@@ -38,7 +38,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         //username, role
         CustomUserPrincipal principal = (CustomUserPrincipal) authentication.getPrincipal();
         Long userId = principal.getUserId();
-        String role = principal.getAuthorities().iterator().next().getAuthority();
+        String role = principal.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
         String username = principal.getUsername();
         String name = principal.getName();
 

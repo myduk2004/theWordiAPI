@@ -104,7 +104,7 @@ public class SecurityConfig {
         //테스트용
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //CORS
-                        .requestMatchers(HttpMethod.GET,  "/", "/index", "/home",
+                        .requestMatchers(HttpMethod.GET,  "/", "/index", "/home", "/api/bible/**",
                                 "/css/**", "/js/**", "/images/**").permitAll()  //정적 리소스
                         .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()  //인증관련
 
