@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class BibleBookId implements Serializable {
 
     @Column(name="book_id")
-    private Short bookId;
+    private int bookId;
 
     @Column(name="version_id", length=20)
     private String versionId;

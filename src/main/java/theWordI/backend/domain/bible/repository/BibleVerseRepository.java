@@ -19,25 +19,28 @@ public interface BibleVerseRepository extends JpaRepository<BibleVerse, Long> {
             b.verseId,
             a.versionId,
             a.versionName,
-            b.bookId,
+            c.id.bookId,
+            c.nameKo,
             b.chapter,
             b.verse,
             b.text
             )
             from BibleVersion a
-            join BibleVerse b on a.versionId = b.versionId
+            join BibleBook c on a.versionId = c.id.versionId
+            join BibleVerse b on c.id.versionId = b.versionId and c.id.bookId = b.bookId
             where a.versionId in :versionIds
-            	and b.bookId = :bookId
+            	and c.id.bookId = :bookId
             	and b.chapter = :chapter
-            	and b.verse between COALESCE(:verse , b.verse) and COALESCE(:verseTo, b.verse)
-            order by a.orderNo, a.versionId, b.bookId, b.chapter, b.verse
+            	and b.verse >= :startVerse
+            	and b.verse <= :endVerse
+            order by a.orderNo, a.versionId, c.id.bookId, b.chapter, b.verse
             """)
     List<BibleVerseRow> findVerseByVersions(
             @Param("versionIds") List<String> versionIds,
             @Param("bookId") int bookId,
             @Param("chapter") int chapter,
-            @Param("verse") Integer verse,
-            @Param("verseTo") Integer verseTo
+            @Param("verse") Integer startVerse,
+            @Param("verseTo") Integer endVerse
     );
 
 

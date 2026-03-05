@@ -73,7 +73,10 @@ public class BibleService {
                                                         Integer verseTo)
     {
         //1. DB조회
-        List<BibleVerseRow> rows = verseRepository.findVerseByVersions(versionIds, bookId, chapter, verse, verseTo);
+        Integer startVerse = (verse == null) ? 1 : verse;
+        Integer endVerse = (verseTo == null) ? 999 : verseTo;
+
+        List<BibleVerseRow> rows = verseRepository.findVerseByVersions(versionIds, bookId, chapter, startVerse, endVerse);
 
 
         //2. versionId 기준 Grouping(순서유지)
@@ -103,6 +106,7 @@ public class BibleService {
                                     .map(r -> new BibleVerseItemResponse(
                                             r.getVerseId(),
                                             r.getBookId(),
+                                            r.getBookName(),
                                             r.getChapter(),
                                             r.getVerse(),
                                             r.getText()
@@ -116,7 +120,6 @@ public class BibleService {
                 .toList();
 
     }
-
 
     //구절 저장/수정(버전 + 책)
     @Transactional

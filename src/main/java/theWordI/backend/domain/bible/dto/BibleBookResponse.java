@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class BibleBookResponse {
     private String versionId;
-    private Short bookId;
+    private int bookId;
     private String nameKo;
     private String testament;
     private Short chapterCount;
