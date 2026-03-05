@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ImageService {
+public class FileService {
 
     private final ObjectStorage objectStorage;
 
@@ -26,8 +26,11 @@ public class ImageService {
     @Value("${oci.region}")
     private String region;
 
+    @Value("${oci.storage.base-url}")
+    private String baseUrl;
+
     //이미지를 OCI Object Storage에 업로드하고 URL을 반환
-    public String uploadImage(MultipartFile file) throws IOException
+    public String upload(MultipartFile file) throws IOException
     {
         //1. 파일 이름 생성 (중복 방지를 위해 UUID + 원본파일명)
         String fileName = UUID.randomUUID().toString()
@@ -47,8 +50,6 @@ public class ImageService {
 
         //4. 저장된 객체의 접근 URL 반환
         // 형식: https://objectstorage.{region}.oraclecloud.com/n/{namespace}/b/{bucket}/o/{objectName}
-
-        return String.format("https://objectstorage.%s.oraclecloud.com/n/%s/b/%s/o/%s",
-                region, namespace, bucketName, fileName);
+        return baseUrl + fileName;
     }
 }

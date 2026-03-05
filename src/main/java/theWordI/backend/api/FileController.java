@@ -6,29 +6,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import theWordI.backend.domain.file.service.ImageService;
+import theWordI.backend.domain.file.service.FileService;
 
 import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/file")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-public class ImageController {
+public class FileController {
 
-    private final ImageService imageService;
+    private final FileService fileService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> upload(@RequestParam("image") MultipartFile image)
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
     {
-        if (image.isEmpty())
+        if (file.isEmpty())
         {
             return ResponseEntity.badRequest().body("파일이 없습니다.");
         }
 
         try {
-            String imageUrl = imageService.uploadImage(image);
+            String imageUrl = fileService.upload(file);
             return ResponseEntity.ok(Map.of("url", imageUrl));
         }
         catch(IOException e)

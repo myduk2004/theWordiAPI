@@ -107,7 +107,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,  "/", "/index", "/home", "/api/bible/**",
                                 "/css/**", "/js/**", "/images/**").permitAll()  //정적 리소스
                         .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()  //인증관련
-                .requestMatchers(HttpMethod.POST, "/images/upload").permitAll()  //테스트용 추후 삭제
+
+                .requestMatchers(HttpMethod.POST, "/file/upload").permitAll()  //테스트용 추후 삭제
+
                         //회원
                         .requestMatchers(HttpMethod.POST, "/user/exist", "/user").permitAll()
                         .requestMatchers("/user").authenticated()

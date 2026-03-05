@@ -10,14 +10,14 @@ import java.util.List;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer{
 
-    @Override
-    public void addCorsMappings(CorsRegistry corsRegistry) {
-
-        corsRegistry.addMapping("/**")
-                .allowedOrigins("https://thewordi.kr")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowCredentials(true)
-                .allowedHeaders("*")
-                .exposedHeaders("Set-Cookie", "Authorization");
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry corsRegistry) {
+//
+//        corsRegistry.addMapping("/**")
+//                .allowedOrigins("https://thewordi.kr")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                .allowCredentials(true)
+//                .allowedHeaders("*")
+//                .exposedHeaders("Set-Cookie", "Authorization");
+//    }
 }
