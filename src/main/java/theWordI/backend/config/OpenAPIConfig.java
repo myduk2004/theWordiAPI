@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+
+//swagger 설정관련 config
 @Configuration
 public class OpenAPIConfig {
 
@@ -23,7 +25,8 @@ public class OpenAPIConfig {
                 .version("v1.0.0"));
         openAPI.servers(List.of(
                 new Server()
-                        .url("https://api.thewordi.kr")
+                        //.url("https://api.thewordi.kr")
+                        .url("http://localhost:8080")
                         .description("api서버")
         ));
         return openAPI;

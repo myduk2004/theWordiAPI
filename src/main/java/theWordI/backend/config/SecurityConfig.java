@@ -107,13 +107,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,  "/", "/index", "/home", "/api/bible/**",
                                 "/css/**", "/js/**", "/images/**").permitAll()  //정적 리소스
                         .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()  //인증관련
-
-                .requestMatchers(HttpMethod.POST, "/file/upload").permitAll()  //테스트용 추후 삭제
-
-                        //회원
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/user/exist", "/user").permitAll()
-                        .requestMatchers("/user").authenticated()
 
+                        // 2. 테스트용 허용
+                        .requestMatchers(HttpMethod.GET, "/meditations", "/meditations/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/file/upload").permitAll()
+
+
+                        .requestMatchers("/user").authenticated()
                         //API 보호
                         .requestMatchers("/api/**").authenticated()
 

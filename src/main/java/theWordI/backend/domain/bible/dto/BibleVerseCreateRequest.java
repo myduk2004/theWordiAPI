@@ -38,7 +38,6 @@ public class BibleVerseCreateRequest {
     //DTO를 Entity로 변환하는 메서드
     public BibleVerse toEntity(Long regId)
     {
-
         return BibleVerse.builder()
                 .versionId(this.versionId)
                 .bookId(this.bookId)
@@ -49,5 +48,4 @@ public class BibleVerseCreateRequest {
                         .orElseThrow(() -> new UnAuthorizedException("로그인이 필요합니다.")))
                 .build();
     }
-
 }

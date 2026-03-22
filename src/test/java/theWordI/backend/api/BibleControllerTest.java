@@ -49,7 +49,7 @@ class BibleControllerTest {
         request.setVersionId("KJVKO");
         request.setBookId(1);
         request.setChapter(1);
-        request.setVerse(1);
+        request.setVerse(100);
         request.setText("태초에 하나님께서 하늘과 땅을 창조하셨느니라.");
 
         mockMvc.perform(post("/api/bible/verse")
@@ -65,7 +65,7 @@ class BibleControllerTest {
     private CustomUserPrincipal mockUser()
     {
         return new CustomUserPrincipal(
-                1L,
+                5L,
                 null,
                 null,
                 null,

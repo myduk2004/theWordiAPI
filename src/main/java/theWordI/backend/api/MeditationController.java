@@ -1,0 +1,76 @@
+package theWordI.backend.api;
+
+
+import jakarta.validation.Valid;
+
+import jakarta.ws.rs.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import theWordI.backend.domain.meditation.dto.MeditationCreateRequest;
+import theWordI.backend.domain.meditation.dto.MeditationListResponse;
+import theWordI.backend.domain.meditation.dto.MeditationUpdateRequest;
+import theWordI.backend.domain.meditation.entity.Meditation;
+import theWordI.backend.domain.meditation.service.MeditationService;
+
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/meditations")
+@RequiredArgsConstructor
+@Slf4j
+public class MeditationController {
+
+    private final MeditationService service;
+    @GetMapping
+    public ResponseEntity<Slice<MeditationListResponse>> getMeditations(
+            @RequestParam(required = false) String searchItem,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Pageable pageable
+    )
+    {
+        Slice<MeditationListResponse> response = service.getMeditations(searchItem, keyword, startDate, endDate, pageable);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Map<String, Long>> createMeditation(@Valid @RequestBody MeditationCreateRequest dto) {
+        Long meditationId = service.save(dto);
+        Map<String, Long> result = Collections.singletonMap("meditationId", meditationId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @GetMapping("/{meditationId}")
+    public ResponseEntity<Meditation> getMeditation(@PathVariable Long meditationId) {
+        Meditation meditation = service.getMeditation(meditationId)
+                .orElseThrow(() -> new NotFoundException("데이터가 존재하지 않습니다."));
+
+        return ResponseEntity.ok().body(meditation);
+    }
+
+
+
+    @PutMapping("/update")
+    public ResponseEntity<Map<String, Long>> updateMeditation(@Valid @RequestBody MeditationUpdateRequest dto) {
+        Long meditationId = service.update(dto);
+        Map<String, Long> result = Collections.singletonMap("meditationId", meditationId);
+        return ResponseEntity.ok().body(result);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/delete/{meditationId}")
+    public void deleteMeditation(@PathVariable Long meditationId) {
+        service.delete(meditationId);
+    }
+}
