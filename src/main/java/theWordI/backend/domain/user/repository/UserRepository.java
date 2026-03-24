@@ -12,11 +12,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByUserId(Long userId);
 
-    Optional<UserEntity> findByUsernameAndIsLockAndIsSocial(String username,
-                                                            Boolean isLock,
-                                                            Boolean isSocial);
+    Optional<UserEntity> findByUsernameAndLockedAndSocial(String username,
+                                                            Boolean locked,
+                                                            Boolean social);
 
-    Optional<UserEntity> findByUsernameAndIsSocial(String username, Boolean social);
+    Optional<UserEntity> findByUsernameAndSocial(String username, Boolean social);
 
 
     @Transactional

@@ -23,14 +23,14 @@ public class UserController {
     }
 
     // 사용자 username 중복체크
-    @PostMapping(value="/user/exist", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> existUser(@RequestBody UserSearchRequestDTO dto)
+    @GetMapping(value="/user/exist")
+    public ResponseEntity<Boolean> existUser(@RequestParam String username)
     {
-        return ResponseEntity.ok(userService.existUser(dto));
+        return ResponseEntity.ok(userService.existUser(username));
     }
 
     // 회원가입
-    @PostMapping(value="/user", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/user/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Long>> JoinApi(@RequestBody UserCreateRequestDTO dto)
     {
         Long id = userService.addUser(dto);

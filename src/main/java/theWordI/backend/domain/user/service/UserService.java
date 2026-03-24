@@ -42,9 +42,9 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
     }
 
     // 사용자아이디 존재여부 체크(회원가입 시)
-    public Boolean existUser(UserSearchRequestDTO dto)
+    public Boolean existUser(String username)
     {
-        return userRepository.existsByUsername(dto.getUsername());
+        return userRepository.existsByUsername(username);
     }
 
     // 회원 가입
@@ -85,7 +85,7 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         UserEntity user = userRepository
-                .findByUsernameAndIsLockAndIsSocial(username, false, false)
+                .findByUsernameAndLockedAndSocial(username, false, false)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
 
 
@@ -116,7 +116,7 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
         String name = attr.getName();
 
         //=== DB 처리 ===
-        UserEntity user = userRepository.findByUsernameAndIsSocial(username, true)
+        UserEntity user = userRepository.findByUsernameAndSocial(username, true)
             .map(e -> {
                 e.validateNotLocked();
                 return updateSocialUser(e, name, email);

@@ -49,7 +49,7 @@ public class UserEntity {
     private UserRoleType role;
 
     @Column(name="is_social", nullable = false)
-    private boolean isSocial;
+    private boolean social;
 
 
     @Enumerated(EnumType.STRING)
@@ -58,7 +58,7 @@ public class UserEntity {
 
 
     @Column(name="is_lock", nullable=false)
-    private boolean isLock;
+    private boolean locked;
 
 
     @CreatedDate
@@ -82,7 +82,7 @@ public class UserEntity {
 
 
     public void validateNotLocked()  {
-        if (this.isLock){
+        if (this.locked){
             throw new AccountLockedException("계정이 잠겼습니다. 관리자에게 문의해주세요.");
         }
     }
@@ -106,8 +106,8 @@ public class UserEntity {
                 .name(dto.getName())
                 .phone(dto.getPhone())
                 .role(UserRoleType.USER)
-                .isSocial(false)
-                .isLock(false)
+                .social(false)
+                .locked(false)
                 .build();
     }
 
@@ -121,9 +121,9 @@ public class UserEntity {
                 .name(name)
                 .phone("")
                 .role(UserRoleType.USER)
-                .isSocial(true)
+                .social(true)
                 .socialProviderType(SocialProviderType.valueOf(registrationId))
-                .isLock(false)
+                .locked(false)
                 .build();
     }
 
