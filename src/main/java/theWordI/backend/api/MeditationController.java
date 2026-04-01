@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import theWordI.backend.domain.meditation.dto.MeditationCreateRequest;
 import theWordI.backend.domain.meditation.dto.MeditationListResponse;
+import theWordI.backend.domain.meditation.dto.MeditationListResponse2;
 import theWordI.backend.domain.meditation.dto.MeditationUpdateRequest;
 import theWordI.backend.domain.meditation.entity.Meditation;
 import theWordI.backend.domain.meditation.service.MeditationService;
@@ -33,14 +34,14 @@ public class MeditationController {
     private final MeditationService service;
     @GetMapping
     public ResponseEntity<Slice<MeditationListResponse>> getMeditations(
-            @RequestParam(required = false) String searchItem,
-            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String text,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Pageable pageable
     )
     {
-        Slice<MeditationListResponse> response = service.getMeditations(searchItem, keyword, startDate, endDate, pageable);
+        Slice<MeditationListResponse> response = service.getMeditations(title, text, startDate, endDate, pageable);
         return ResponseEntity.ok().body(response);
     }
 

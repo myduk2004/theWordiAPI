@@ -1,6 +1,5 @@
 package theWordI.backend.domain.meditation.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import theWordI.backend.domain.meditation.dto.MeditationCreateRequest;
 import theWordI.backend.domain.meditation.dto.MeditationListResponse;
+import theWordI.backend.domain.meditation.dto.MeditationListResponse2;
 import theWordI.backend.domain.meditation.dto.MeditationUpdateRequest;
 import theWordI.backend.domain.meditation.entity.Meditation;
 import theWordI.backend.domain.meditation.repository.MeditationRepository;
@@ -25,7 +25,6 @@ import java.time.LocalDate;
 
 import java.util.Collections;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -148,17 +147,18 @@ class MeditationServiceTest {
     void getMeditations() {
 
         //given
-        String searchColumn = "title";
-        String keyword = "테스트";
-        String searchDtColumn = "meditationDt";
+        String title  = "테스트";
+        String text = "";
         LocalDate startDt = LocalDate.of(2026, 3, 1);
         LocalDate endDt =  LocalDate.of(2026, 3, 31);
         Pageable pageable = PageRequest.of(0, 5);
 
+
+
         //when
         Slice<MeditationListResponse> meditations = meditationService.getMeditations(
-                searchColumn,
-                keyword,
+                title,
+                text,
                 startDt,
                 endDt,
                 pageable

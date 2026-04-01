@@ -1,0 +1,62 @@
+package theWordI.backend.domain.readingPlan.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name="bible_reading_plan_log", indexes={
+        @Index(name = "idx_bible_reading_plan_log", columnList = "user_id, plan_book_id")
+})
+@Builder
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
+public class ReadingPlanLog {
+
+    @Id
+    @Column(name="plan_log_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long planLogId;
+
+    @Column(name="plan_book_id")
+    @NotNull
+    private Long planBookId;
+
+    @Column(name="user_id")
+    @NotNull
+    private Long userId;
+
+    @Column(name="book_id", columnDefinition = "smallint")
+    @NotNull
+    private Integer bookId;
+
+    @Column(name="version_id", length = 100)
+    @NotEmpty
+    private String versionId;
+
+    @Column(name="start_chapter", columnDefinition = "smallint")
+    @NotNull
+    private Integer startChapter;
+
+    @Column(name="end_chapter", columnDefinition = "smallint")
+    @NotNull
+    private Integer endChapter;
+
+    @Column(name="start_dt")
+    private LocalDateTime startDt;
+
+    @Column(name="end_dt")
+    private LocalDateTime endDt;
+
+    @CreatedDate
+    @Column(name="reg_dt", updatable = false)
+    private LocalDateTime regDt;
+
+}

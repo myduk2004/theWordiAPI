@@ -3,15 +3,16 @@ package theWordI.backend.domain.meditation.service;
 
 import jakarta.persistence.EntityNotFoundException;
 
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import theWordI.backend.domain.meditation.dto.MeditationCreateRequest;
 import theWordI.backend.domain.meditation.dto.MeditationListResponse;
+import theWordI.backend.domain.meditation.dto.MeditationListResponse2;
 import theWordI.backend.domain.meditation.dto.MeditationUpdateRequest;
 import theWordI.backend.domain.meditation.entity.Meditation;
 import theWordI.backend.domain.meditation.entity.MeditationVerse;
@@ -21,7 +22,6 @@ import theWordI.backend.util.SecurityUtil;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -104,19 +104,44 @@ public class MeditationService {
     }
 
     //특정 유저의  명상 기록 모두 조회
-    public Slice<MeditationListResponse> getMeditations(String searchItem,
-                                                        String keyword,
+//    public Slice<MeditationListResponse> getMeditations(String searchItem,
+//                                                        String keyword,
+//                                                        LocalDate startDt,
+//                                                        LocalDate endDt,
+//                                                        Pageable pageable)
+//    {
+//        return repository.searchMeditations(SecurityUtil.getUserId(),
+//                searchItem,
+//                keyword,
+//                startDt,
+//                endDt,
+//                pageable);
+//
+//    }
+
+
+    //특정 유저의  명상 기록 모두 조회
+    public Slice<MeditationListResponse> getMeditations(String title,
+                                                        String text,
                                                         LocalDate startDt,
                                                         LocalDate endDt,
                                                         Pageable pageable)
     {
-        return repository.searchMeditations(SecurityUtil.getUserId(),
-                searchItem,
-                keyword,
+        List<MeditationListResponse> list = repository.findMeditationList(SecurityUtil.getUserId(),
+                title,
+                text,
                 startDt,
                 endDt,
-                pageable);
+                pageable.getPageSize() + 1,
+                pageable.getOffset()
+        );
+
+        boolean hasNext = list.size() > pageable.getPageSize();
+        List<MeditationListResponse> results = (hasNext) ?
+                list.subList(0, pageable.getPageSize()) : list;
+
+
+        return new SliceImpl<>(results, pageable, hasNext);
 
     }
-
 }

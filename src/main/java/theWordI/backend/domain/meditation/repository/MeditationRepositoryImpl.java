@@ -1,6 +1,5 @@
 package theWordI.backend.domain.meditation.repository;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -10,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import theWordI.backend.domain.meditation.dto.MeditationListResponse;
+import theWordI.backend.domain.meditation.dto.MeditationListResponse2;
 import theWordI.backend.domain.meditation.entity.QMeditation;
 
 import java.time.LocalDate;
@@ -23,12 +22,12 @@ public class MeditationRepositoryImpl implements MeditationRepositoryCustom {
     private final QMeditation m = QMeditation.meditation;
 
     @Override
-    public Slice<MeditationListResponse> searchMeditations(Long userId,
-                                                           String searchItem,
-                                                           String keyword,
-                                                           LocalDate startDt,
-                                                           LocalDate endDt,
-                                                           Pageable pageable) {
+    public Slice<MeditationListResponse2> searchMeditations(Long userId,
+                                                            String searchItem,
+                                                            String keyword,
+                                                            LocalDate startDt,
+                                                            LocalDate endDt,
+                                                            Pageable pageable) {
 
 
         StringExpression textSubstring = new CaseBuilder()
@@ -36,9 +35,10 @@ public class MeditationRepositoryImpl implements MeditationRepositoryCustom {
                 .then(m.text.substring(0, 100))
                 .otherwise(m.text);
 
-        List<MeditationListResponse> content = query
+
+        List<MeditationListResponse2> content = query
                 .select(
-                        Projections.constructor(MeditationListResponse.class,
+                        Projections.constructor(MeditationListResponse2.class,
                                 m.meditationId, m.title, textSubstring, m.meditationDt
                         )
                 )
@@ -48,21 +48,25 @@ public class MeditationRepositoryImpl implements MeditationRepositoryCustom {
                         dateBetween(startDt, endDt),
                         searchColumnEq(searchItem, keyword)
                 )
-                .orderBy(m.meditationId.desc(), m.regDt.desc())
+                .orderBy(m.meditationId.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
 
         boolean hasNext = content.size() > pageable.getPageSize();
-        if (hasNext) content.remove(pageable.getPageSize()); //넘친 1개 제거
+        List<MeditationListResponse2> sliced = (hasNext) ?
+                                content.subList(0, pageable.getPageSize())//넘친 1개 제거
+                                : content;
 
-        return new SliceImpl<>(content, pageable, hasNext);
+        return new SliceImpl<>(sliced, pageable, hasNext);
     }
 
     private BooleanExpression dateBetween(LocalDate startDt, LocalDate endDt) {
 
-        if (startDt == null || endDt == null) return null;
+        if (startDt == null && endDt == null) return null;
+        if (startDt == null) return m.meditationDt.loe(endDt); // <=
+        if (endDt == null) return m.meditationDt.goe(startDt); // >=
         return m.meditationDt.between(startDt, endDt);
     }
 

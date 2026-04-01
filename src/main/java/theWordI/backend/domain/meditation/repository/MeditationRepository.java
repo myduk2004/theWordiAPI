@@ -1,12 +1,12 @@
 package theWordI.backend.domain.meditation.repository;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import theWordI.backend.domain.meditation.dto.MeditationListResponse;
+import theWordI.backend.domain.meditation.dto.MeditationListResponse2;
 import theWordI.backend.domain.meditation.entity.Meditation;
 
 import java.time.LocalDate;
@@ -27,5 +27,26 @@ public interface MeditationRepository  extends JpaRepository<Meditation, Long>, 
     List<Meditation> findByUserIdAndMeditationDt(Long userId, LocalDate meditationDt);
 
 
+    @Query(value= """
+            SELECT meditation_id as meditationId,
+            title,
+            LEFT(REGEXP_REPLACE(text, '</?span[^>]*>', ''), 100) as text,
+            CAST(meditation_dt AS DATE) as meditationDt
+            FROM meditation
+            WHERE user_id = :userId
+            AND (:title IS NULL OR title like  CONCAT('%', :title, '%'))
+            AND (:text IS NULL OR text like  CONCAT('%', :text , '%'))
+            AND (:startDt IS NULL OR meditation_dt >= :startDt)
+            AND (:endDt IS NULL OR meditation_dt <= :endDt)
+            ORDER BY meditation_dt DESC
+            LIMIT :limit OFFSET :offset
+            """, nativeQuery = true)
+    List<MeditationListResponse> findMeditationList(@Param("userId") Long userId,
+                                                     @Param("title") String title,
+                                                     @Param("text") String text,
+                                                     @Param("startDt") LocalDate startDt,
+                                                     @Param("endDt") LocalDate endDt,
+                                                     @Param("limit") int limit,
+                                                     @Param("offset") Long offset);
 
 }
