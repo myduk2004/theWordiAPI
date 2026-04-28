@@ -115,7 +115,7 @@ public class SecurityConfig {
                         // 2. 테스트용 허용
                         .requestMatchers(HttpMethod.GET, "/meditations", "/meditations/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/file/upload").permitAll()
-
+                        .requestMatchers("/reading-plans","/reading-plans/**").permitAll()
 
                         .requestMatchers("/user").authenticated()
                         //API 보호

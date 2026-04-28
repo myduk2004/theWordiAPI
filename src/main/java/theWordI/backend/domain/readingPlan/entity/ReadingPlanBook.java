@@ -8,9 +8,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.StringUtils;
+import theWordI.backend.domain.readingPlan.dto.ReadingPlanBookCreateRequest;
+import theWordI.backend.util.SecurityUtil;
 
 import java.time.LocalDateTime;
-import java.util.EventListener;
 
 @Entity
 @Table(name="bible_reading_plan_book")
@@ -48,8 +49,9 @@ public class ReadingPlanBook {
     private Integer readChaptersCnt = 0;
 
     @Builder.Default
-    @Column(name="status", columnDefinition = "char(1) default 'W'")
-    private String status = "W";
+    @Enumerated(EnumType.STRING)
+    @Column(name="status")
+    private PlanStatus status = PlanStatus.WAITING;
 
     @Column(name="start_dt")
     private LocalDateTime startDt;
@@ -65,13 +67,34 @@ public class ReadingPlanBook {
     @Column(name="upd_dt")
     private LocalDateTime updDt;
 
-    public void update(String status,
-                       LocalDateTime startDt,
-                       LocalDateTime endDt)
+    public static ReadingPlanBook create(Long planId, ReadingPlanBookCreateRequest dto, int readCnt, PlanStatus status)
     {
-        if (StringUtils.hasText(status))
+        return ReadingPlanBook.builder()
+                .planId(planId)
+                .userId(SecurityUtil.getUserId())
+                .bookId(dto.getBookId())
+                .totalChapters(BookInfo.getTotalChapter(dto.getBookId()))
+                .readChaptersCnt(readCnt)
+                .status(status)
+                .startDt(dto.getStartDt())
+                .endDt(dto.getEndDt())
+                .build();
+    }
+
+    public void update(PlanStatus status,
+                       Integer readChaptersCnt,
+                       LocalDateTime startDt)
+    {
+
+
+        if (status != null)
         {
             this.status = status;
+        }
+
+        if (readChaptersCnt != null &&  readChaptersCnt > 0)
+        {
+            this.readChaptersCnt = readChaptersCnt;
         }
 
         if (startDt != null)
@@ -79,15 +102,26 @@ public class ReadingPlanBook {
             this.startDt = startDt;
         }
 
-        if (endDt != null)
+        if (this.status ==  PlanStatus.COMPLETED)
         {
-            this.endDt = endDt;
+            this.endDt = LocalDateTime.now();
         }
     }
 
-    public boolean isOwner(Long requestUserId)
+    public void updatePreStatus(Integer readChaptersCnt)
     {
-        return this.userId != null && this.userId.equals(requestUserId);
+        this.status = PlanStatus.PROCEEDING;
+
+        if (readChaptersCnt != null &&  readChaptersCnt > 0)
+        {
+            this.readChaptersCnt = readChaptersCnt;
+        }
+        this.endDt = null;
+    }
+
+    public boolean isOwner()
+    {
+        return this.userId != null && this.userId.equals(SecurityUtil.getUserId());
     }
 
 }

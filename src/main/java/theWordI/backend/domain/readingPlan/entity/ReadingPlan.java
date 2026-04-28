@@ -1,12 +1,15 @@
 package theWordI.backend.domain.readingPlan.entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.util.StringUtils;
+import theWordI.backend.util.SecurityUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,26 +26,35 @@ public class ReadingPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long planId;
 
+
     @Column(name="user_id")
     @NotNull
     private Long userId;
 
+
+    @Column(name="version_id")
+    @NotEmpty
+    private String versionId;
+
+
     @Column(name="reading_count", columnDefinition = "smallint")
     @NotNull
-    private Integer readingCount;
+    private int readingCount;
 
     @Column(name="title")
     private String title;
 
     @Column(name="start_dt")
-    private LocalDateTime startDt;
+    @NotNull
+    private LocalDate startDt;
 
     @Column(name="end_dt")
     private LocalDateTime endDt;
 
     @Builder.Default
-    @Column(name="status", columnDefinition = "char(1) default 'W'")
-    private String status = "W";
+    @Enumerated(EnumType.STRING)
+    @Column(name="status", length = 20)
+    private PlanStatus status = PlanStatus.WAITING;
 
     @CreatedDate
     @Column(name="reg_dt", updatable = false)
@@ -52,9 +64,30 @@ public class ReadingPlan {
     @Column(name="upd_dt")
     private LocalDateTime updDt;
 
-
-    public void update(String title, LocalDateTime startDt, LocalDateTime endDt)
+    public static ReadingPlan createPlan(String versionId, String title, LocalDate startDt, Long userId, int readingCount)
     {
+        return ReadingPlan.builder()
+                .userId(userId)
+                .versionId(versionId)
+                .title(title)
+                .readingCount(readingCount)
+                .startDt(startDt)
+                .build();
+    }
+
+    public void clearEndDt()
+    {
+        this.endDt = null;
+    }
+
+    public void update(String versionId, String title, LocalDate startDt)
+    {
+
+        if (StringUtils.hasText(versionId))
+        {
+            this.versionId = versionId;
+        }
+
         if (StringUtils.hasText(title))
         {
             this.title = title;
@@ -64,16 +97,34 @@ public class ReadingPlan {
         {
             this.startDt = startDt;
         }
+    }
 
-        if (endDt != null)
+    public void updateStatus(int readingCount)
+    {
+        if (readingCount < 1) return;
+
+        this.readingCount = readingCount;
+        if (readingCount >= 66)
         {
-            this.endDt = endDt;
+            this.status = PlanStatus.COMPLETED;
+            this.endDt = LocalDateTime.now();
+        }
+        else {
+            this.status = PlanStatus.PROCEEDING;
         }
     }
 
 
-    public boolean isOwner(Long requestUserId)
+    public void updatePreStatus()
     {
-        return this.userId != null && this.userId.equals((requestUserId));
+        this.status = PlanStatus.PROCEEDING;
+        this.readingCount = (this.readingCount > 1)?this.readingCount-1 : 0;
+        this.endDt = null;
+    }
+
+
+    public boolean isOwner()
+    {
+        return this.userId != null && this.userId.equals((SecurityUtil.getUserId()));
     }
 }
