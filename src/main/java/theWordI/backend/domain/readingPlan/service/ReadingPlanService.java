@@ -9,10 +9,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanBookCreateRequest;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanCreateRequest;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanResponse;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanUpdateRequest;
+import org.springframework.web.bind.annotation.PathVariable;
+import theWordI.backend.domain.bible.entity.BibleVersion;
+import theWordI.backend.domain.bible.service.BibleService;
+import theWordI.backend.domain.readingPlan.dto.*;
 import theWordI.backend.domain.readingPlan.entity.*;
 import theWordI.backend.domain.readingPlan.repository.ReadLogRepository;
 import theWordI.backend.domain.readingPlan.repository.ReadingPlanBookLogRepository;
@@ -22,7 +22,7 @@ import theWordI.backend.util.SecurityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Stream;
 
 
 @Service
@@ -35,23 +35,28 @@ public class ReadingPlanService {
     private final ReadingPlanBookLogRepository repo_book_log;
     private final ReadLogRepository repo_read_log;
 
+    private final BibleService bibleService;
+
     /*
     * 통독계획 조회
     * */
     public List<ReadingPlanResponse> getPlans()
     {
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "planId"));
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "readCount"));
         List<ReadingPlan> plans = repo.findByUserId(SecurityUtil.getUserId(), pageRequest);
         return plans.stream()
                 .map(ReadingPlanResponse::from)
                 .toList();
     }
+
+
     /*
     통독계획 등록
      */
     public Long savePlan(ReadingPlanCreateRequest dto)
     {
-        ReadingPlan newPlan = dto.toEntity(0);
+        int maxReadCount = repo.findMaxReadCount(SecurityUtil.getUserId())+1;
+        ReadingPlan newPlan = dto.toEntity(maxReadCount);
         repo.save(newPlan);
         return newPlan.getPlanId();
     }
@@ -99,6 +104,37 @@ public class ReadingPlanService {
         //6. reading_plan 삭제
         repo.delete(readingPlan);
 
+        //7. readCount 차감
+        repo.decrementReadCounts(userId, planId);
+    }
+
+    /*
+     * 책계획 조회
+     * */
+    public List<ReadingPlanBookResponse> getPlansBooks(Long planId, String versionId)
+    {
+
+        if (versionId == "" || versionId.isBlank()) {
+            List<BibleVersion> versions = bibleService.getVersionAll().stream()
+                    .filter(v -> Boolean.TRUE.equals(v.getIsStandard()))
+                    .toList();
+
+            if (versions.isEmpty())
+            {
+                throw new IllegalArgumentException("기본 성경 버전을 찾을 수 없습니다.");
+            }
+            versionId  = versions.getFirst().getVersionId();
+        }
+
+        return repo_book.findPlanBooks(SecurityUtil.getUserId(), planId, versionId);
+    }
+
+    /*
+    책계획 로그 조회
+     */
+    public List<ReadingPlanBookLogResponse> getPlansBookLogs(Long planId, Long planBookId) {
+        List<ReadingPlanBookLog> logs = repo_book_log.findByUserIdAndPlanIdAndPlanBookIdOrderByStartChapter(SecurityUtil.getUserId(), planId, planBookId);
+        return logs.stream().map(ReadingPlanBookLogResponse::from).toList();
     }
 
     /*
@@ -128,7 +164,7 @@ public class ReadingPlanService {
             repo_book.findByUserIdAndPlanIdAndBookId(userId, planId, dto.getBookId())
                     .ifPresent(
                             book -> {
-                                throw new IllegalArgumentException("책이 이미 존재합니다. 추가버튼으로 등록해주세요.");
+                                throw new IllegalArgumentException("이미 읽기 시작한 책입니다.");
                             }
                     );
 
@@ -147,20 +183,19 @@ public class ReadingPlanService {
 
             if (!planBook.isOwner())  throw new AccessDeniedException("접근권한이 없습니다.");
 
+            //3. DB로그 중복 체크
+            boolean alreadyRead = repo_read_log.existsByUserIdAndPlanIdAndBookIdAndChapterNumBetween(userId,
+                    planBook.getPlanId(), planBook.getBookId(), start, end);
+
+            if (alreadyRead)
+            {
+                throw new IllegalArgumentException("해당 범위 내에 이미 기록된 읽기 로그가 존재합니다.");
+            }
+
             int updatedTotalRead = planBook.getReadChaptersCnt() + addedCount;
             bookStatus = (updatedTotalRead >= total )? PlanStatus.COMPLETED: planBook.getStatus();
 
             planBook.update(bookStatus, updatedTotalRead,null);
-        }
-
-
-        //3. DB로그 중복 체크
-        boolean alreadyRead = repo_read_log.existsByUserIdAndPlanIdAndBookIdAndChapterNumBetween(userId,
-                planBook.getPlanId(), planBook.getBookId(), start, end);
-
-        if (alreadyRead)
-        {
-            throw new IllegalArgumentException("해당 범위 내에 이미 기록된 읽기 로그가 존재합니다.");
         }
 
         //4. book_log등록
@@ -181,7 +216,7 @@ public class ReadingPlanService {
         //7. 종 book 66권을 다 읽었을 경우 계획을 완료상태로 update
         if (bookStatus == PlanStatus.COMPLETED)
         {
-            plan.updateStatus(plan.getReadingCount() + 1);
+            plan.updateStatus(plan.getBookCount() + 1);
         }
 
         return planBook.getPlanBookId();

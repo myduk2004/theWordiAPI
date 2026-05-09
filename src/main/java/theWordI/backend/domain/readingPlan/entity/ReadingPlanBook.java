@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 import theWordI.backend.domain.readingPlan.dto.ReadingPlanBookCreateRequest;
 import theWordI.backend.util.SecurityUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -54,10 +55,10 @@ public class ReadingPlanBook {
     private PlanStatus status = PlanStatus.WAITING;
 
     @Column(name="start_dt")
-    private LocalDateTime startDt;
+    private LocalDate startDt;
 
     @Column(name="end_dt")
-    private LocalDateTime endDt;
+    private LocalDate endDt;
 
     @CreatedDate
     @Column(name="reg_dt", updatable = false)
@@ -83,7 +84,7 @@ public class ReadingPlanBook {
 
     public void update(PlanStatus status,
                        Integer readChaptersCnt,
-                       LocalDateTime startDt)
+                       LocalDate startDt)
     {
 
 
@@ -104,7 +105,7 @@ public class ReadingPlanBook {
 
         if (this.status ==  PlanStatus.COMPLETED)
         {
-            this.endDt = LocalDateTime.now();
+            this.endDt = LocalDate.now();
         }
     }
 

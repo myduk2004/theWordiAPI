@@ -110,6 +110,9 @@ public class SecurityConfig {
                                 "/css/**", "/js/**", "/images/**").permitAll()  //정적 리소스
                         .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()  //인증관련
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/reading-plans", "/reading-plans/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST,"/user/create").permitAll()
 
                         // 2. 테스트용 허용
@@ -117,10 +120,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/file/upload").permitAll()
                         .requestMatchers("/reading-plans","/reading-plans/**").permitAll()
 
+
                         .requestMatchers("/user").authenticated()
                         //API 보호
-                        .requestMatchers("/api/**").authenticated()
-//API 보호
+                       // .requestMatchers("/api/**").authenticated()
                         .requestMatchers("/meditations/**").authenticated()
                         //나머지
                         .anyRequest().denyAll()

@@ -58,9 +58,18 @@ public class BibleService {
 
     //버전에 따른 모든책 조회
     @Transactional(readOnly = true)
-    public List<BibleBook> getBooksByVersion(String versionId)
+    public List<BibleBookResponse> getBooksByVersion(String versionId)
     {
-        return bookRepository.findByIdVersionIdOrderByIdBookId(versionId);
+        List<BibleBook> books = bookRepository.findByIdVersionIdOrderByIdBookId(versionId);
+        return books.stream()
+                .map(b -> BibleBookResponse.from(
+                        b.getId().getVersionId(),
+                        b.getId().getBookId(),
+                        b.getNameKo(),
+                        b.getTestament(),
+                        b.getChapterCount())
+                )
+                .toList();
     }
 
 

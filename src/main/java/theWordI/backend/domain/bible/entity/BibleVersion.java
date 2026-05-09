@@ -41,6 +41,9 @@ public class BibleVersion {
     @Column(name="is_used")
     private Short isUsed;
 
+    @Column(name = "is_standard")
+    private Boolean isStandard;
+
     @Column(name="upd_dt")
     private LocalDate updDt;
 

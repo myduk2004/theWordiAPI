@@ -1,5 +1,6 @@
 package theWordI.backend.domain.readingPlan.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -8,8 +9,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import theWordI.backend.domain.readingPlan.dto.ReadingPlanBookCreateRequest;
 import theWordI.backend.util.SecurityUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
 @Table(name="bible_reading_plan_book_log", indexes={
         @Index(name = "idx_bible_reading_plan_book_log", columnList = "user_id, plan_book_id")
@@ -46,17 +48,17 @@ public class ReadingPlanBookLog {
 
     @Column(name="start_chapter", columnDefinition = "smallint")
     @NotNull
-    private Integer startChapter;
+    private int startChapter;
 
     @Column(name="end_chapter", columnDefinition = "smallint")
     @NotNull
-    private Integer endChapter;
+    private int endChapter;
 
     @Column(name="start_dt")
-    private LocalDateTime startDt;
+    private LocalDate startDt;
 
     @Column(name="end_dt")
-    private LocalDateTime endDt;
+    private LocalDate endDt;
 
     @CreatedDate
     @Column(name="reg_dt", updatable = false)

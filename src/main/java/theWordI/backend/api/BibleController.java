@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import theWordI.backend.domain.bible.dto.BibleVerseCreateRequest;
-import theWordI.backend.domain.bible.dto.BibleVerseResponse;
-import theWordI.backend.domain.bible.dto.BibleVerseUpdateRequest;
-import theWordI.backend.domain.bible.dto.BibleVersionBookResponse;
+import theWordI.backend.domain.bible.dto.*;
 import theWordI.backend.domain.bible.entity.BibleBook;
 import theWordI.backend.domain.bible.entity.BibleVerse;
 import theWordI.backend.domain.bible.service.BibleService;
@@ -39,7 +36,7 @@ public class BibleController {
 
     //모든 책 조회(성경버전 + 특정버전)
     @GetMapping("/books")
-    public List<BibleBook> getBooks(@RequestParam String versionId)
+    public List<BibleBookResponse> getBooks(@RequestParam String versionId)
     {
         return bibleService.getBooksByVersion(versionId);
     }

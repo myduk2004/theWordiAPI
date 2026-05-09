@@ -3,15 +3,12 @@ package theWordI.backend.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.http.HttpEntity;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanBookCreateRequest;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanCreateRequest;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanResponse;
-import theWordI.backend.domain.readingPlan.dto.ReadingPlanUpdateRequest;
+import theWordI.backend.domain.readingPlan.dto.*;
 import theWordI.backend.domain.readingPlan.entity.ReadingPlan;
 import theWordI.backend.domain.readingPlan.service.ReadingPlanService;
 
@@ -19,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/reading-plans")
 public class ReadingPlanController {
@@ -60,7 +57,7 @@ public class ReadingPlanController {
     }
 
     //읽은 책 등록
-    @PostMapping("/{planId}/books")
+    @PostMapping("/{planId}/book")
     public ResponseEntity<Map<String, Long>> savePlanBook(@PathVariable Long planId, @RequestBody ReadingPlanBookCreateRequest dto)
     {
         Long planBookId = plan_svc.savePlanBook(planId, dto);
@@ -69,6 +66,19 @@ public class ReadingPlanController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
+
+    @GetMapping("/{planId}/books")
+    public List<ReadingPlanBookResponse> getPlanBooks(@PathVariable Long planId, @RequestParam String versionId)
+    {
+        return  plan_svc.getPlansBooks(planId, versionId);
+    }
+
+    //읽은 책 목록
+    @GetMapping("/{planId}/{planBookId}/logs")
+    public List<ReadingPlanBookLogResponse> getPlanBookLogs(@PathVariable Long planId, @PathVariable Long planBookId)
+    {
+        return  plan_svc.getPlansBookLogs(planId, planBookId);
+    }
 
     //읽은 책 로그 삭제 (Id별 삭제)
     @ResponseStatus(HttpStatus.NO_CONTENT)

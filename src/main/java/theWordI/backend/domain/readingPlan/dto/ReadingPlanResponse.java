@@ -15,7 +15,8 @@ public class ReadingPlanResponse {
 
     private Long planId;
     private String versionId;
-    private int readingCount;
+    private int readCount;
+    private int bookCount;
     private String title;
     private LocalDate startDt;
     private LocalDateTime endDt;
@@ -26,7 +27,8 @@ public class ReadingPlanResponse {
         return ReadingPlanResponse.builder()
                 .planId(entity.getPlanId())
                 .versionId(entity.getVersionId())
-                .readingCount(entity.getReadingCount())
+                .readCount(entity.getReadCount())
+                .bookCount(entity.getBookCount())
                 .title(entity.getTitle())
                 .startDt(entity.getStartDt())
                 .endDt(entity.getEndDt())

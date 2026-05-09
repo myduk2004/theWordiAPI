@@ -37,9 +37,17 @@ public class ReadingPlan {
     private String versionId;
 
 
-    @Column(name="reading_count", columnDefinition = "smallint")
+
+    @Column(name="read_count", columnDefinition = "smallint")
     @NotNull
-    private int readingCount;
+    private int readCount;
+
+
+    @Column(name="book_count", columnDefinition = "smallint")
+    @NotNull
+    private int bookCount;
+
+
 
     @Column(name="title")
     private String title;
@@ -64,13 +72,14 @@ public class ReadingPlan {
     @Column(name="upd_dt")
     private LocalDateTime updDt;
 
-    public static ReadingPlan createPlan(String versionId, String title, LocalDate startDt, Long userId, int readingCount)
+    public static ReadingPlan createPlan(String versionId, String title, LocalDate startDt, Long userId, int readCount, int bookCount)
     {
         return ReadingPlan.builder()
                 .userId(userId)
                 .versionId(versionId)
                 .title(title)
-                .readingCount(readingCount)
+                .readCount(readCount)
+                .bookCount(bookCount)
                 .startDt(startDt)
                 .build();
     }
@@ -99,12 +108,12 @@ public class ReadingPlan {
         }
     }
 
-    public void updateStatus(int readingCount)
+    public void updateStatus(int bookCount)
     {
-        if (readingCount < 1) return;
+        if (bookCount < 1) return;
 
-        this.readingCount = readingCount;
-        if (readingCount >= 66)
+        this.bookCount = bookCount;
+        if (bookCount >= 66)
         {
             this.status = PlanStatus.COMPLETED;
             this.endDt = LocalDateTime.now();
@@ -118,7 +127,7 @@ public class ReadingPlan {
     public void updatePreStatus()
     {
         this.status = PlanStatus.PROCEEDING;
-        this.readingCount = (this.readingCount > 1)?this.readingCount-1 : 0;
+        this.bookCount = (this.bookCount > 1)?this.bookCount-1 : 0;
         this.endDt = null;
     }
 
