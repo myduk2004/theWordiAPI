@@ -20,7 +20,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class ReadingPlan {
-
+    private static final int TOTAL_BIBLE_BOOKS = 66; // 성경 총 수
+    
     @Id
     @Column(name="plan_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,17 +38,12 @@ public class ReadingPlan {
     private String versionId;
 
 
-
     @Column(name="read_count", columnDefinition = "smallint")
-    @NotNull
     private int readCount;
 
 
     @Column(name="book_count", columnDefinition = "smallint")
-    @NotNull
     private int bookCount;
-
-
 
     @Column(name="title")
     private String title;
@@ -89,40 +85,37 @@ public class ReadingPlan {
         this.endDt = null;
     }
 
-    public void update(String versionId, String title, LocalDate startDt)
+    public void update(String title)
     {
-
-        if (StringUtils.hasText(versionId))
-        {
-            this.versionId = versionId;
-        }
-
         if (StringUtils.hasText(title))
         {
             this.title = title;
         }
-
-        if (startDt != null)
-        {
-            this.startDt = startDt;
-        }
     }
 
-    public void updateStatus(int bookCount)
+
+
+    public void updateProceedingPlan(PlanStatus bookStatus)
     {
-        if (bookCount < 1) return;
-
-        this.bookCount = bookCount;
-        if (bookCount >= 66)
+        if (bookStatus == PlanStatus.COMPLETED)
         {
-            this.status = PlanStatus.COMPLETED;
-            this.endDt = LocalDateTime.now();
+            this.bookCount = this.bookCount + 1;
         }
-        else {
-            this.status = PlanStatus.PROCEEDING;
-        }
+
+        this.status = PlanStatus.PROCEEDING;
     }
 
+
+    public void updateCompletePlan()
+    {
+        int newBookCount = this.bookCount + 1;
+        if (TOTAL_BIBLE_BOOKS > newBookCount) return;
+
+        this.bookCount = newBookCount;
+        this.status = PlanStatus.COMPLETED;
+        this.endDt = LocalDateTime.now();
+
+    }
 
     public void updatePreStatus()
     {

@@ -71,7 +71,7 @@ public class ReadingPlanService {
 
         if (!plan.isOwner()) throw new AccessDeniedException("권한이 없습니다.");
 
-        plan.update(dto.getVersionId(), dto.getTitle(), dto.getStartDt());
+        plan.update(dto.getTitle());
 
         return plan;
     }
@@ -213,11 +213,32 @@ public class ReadingPlanService {
         repo_read_log.saveAll(readLogs);
 
 
-        //7. 종 book 66권을 다 읽었을 경우 계획을 완료상태로 update
-        if (bookStatus == PlanStatus.COMPLETED)
+        
+        /*
+        case 1: 첫 book등록 ,   등록하면서 chapter 다 안 읽은 경우
+        plan.status = proceeding, plan.updDt = now
+
+        case 2: 첫 book등록, 등록하면서 chapter 다 읽은 경우
+        plan.status = proceeding, plan.bookCount = bookCount + 1 , plan.updDt = now
+
+        case 3: 이미 book 등록 , 추가하면서 chapter 다 안읽은 경우
+        plan update 할 계획 없음
+
+        case 4: 이미 book 등록, 추가하면서 chapter 다 읽은 경우
+        plan.status = complete, plan.bookCount = bookCount + 1 , plan.endDt = now , plan.updDt = now
+         */
+        if (dto.getPlanBookId() == null)
         {
-            plan.updateStatus(plan.getBookCount() + 1);
+            plan.updateProceedingPlan(bookStatus);
         }
+        else
+        {
+            if (bookStatus == PlanStatus.COMPLETED)
+            {
+                plan.updateCompletePlan();
+            }
+        }
+
 
         return planBook.getPlanBookId();
     }
@@ -262,44 +283,84 @@ public class ReadingPlanService {
     /*
      * 읽은 책 내역 삭제 (Id별 삭제)
      * */
-    public void deletePlanBookLogById(Long planId, Long planBookId, Long planLogId)
+    public void deletePlanBookLogById(Long planId, Long planBookId, List<Long> planLogIds)
     {
+
+        if (planLogIds == null || planLogIds.isEmpty())
+        {
+            return ; //삭제할 ID가 없으면 즉시 종료
+        }
         Long userId = SecurityUtil.getUserId();
 
-        //1. 존재여부체크
+        //1. 부모 엔티티 존재 여부 및 권한 체크 (반복문 밖에서 딱 1번만 수행)
         ReadingPlan plan = repo.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("데이터가 존재하지 않습니다."));
 
         ReadingPlanBook planBook = repo_book.findById(planBookId)
                 .orElseThrow(() -> new EntityNotFoundException("데이터가 존재하지 않습니다."));
 
-        ReadingPlanBookLog planBookLog = repo_book_log.findById(planLogId)
-                .orElseThrow(() -> new EntityNotFoundException("데이터가 존재하지 않습니다."));
+        if (!plan.isOwner() || !planBook.isOwner())  throw new AccessDeniedException("접근권한이 없습니다.");
 
-
-        if (!plan.isOwner() || !planBook.isOwner() || !planBookLog.isOwner())  throw new AccessDeniedException("접근권한이 없습니다.");
         if (plan.getStatus().equals(PlanStatus.WAITING) ||
                 plan.getStatus().equals(PlanStatus.ABANDONED))  throw new AccessDeniedException("진행/완료된 계획만 삭제가능합니다.");
 
 
-        int start = planBookLog.getStartChapter();
-        int end = planBookLog.getEndChapter();
-        int readChapterCnt = (end - start)+1;
+        // 2. 삭제할 로그들을 In 절로 한 번에 조회
+        List<ReadingPlanBookLog> planBookLogs = repo_book_log.findAllById(planLogIds);
 
-        //read_log 삭제(n개)
-        repo_read_log.deleteByUserIdAndPlanLogId(userId, planLogId);
+        //요청된 Id 개수와 조회된 데이터 개수가 다르면 데이터 유식/오류가 있는것
+        if (planLogIds.size() != planBookLogs.size())
+        {
+            throw new EntityNotFoundException("삭제할 데이터 중 존재하지 않는 내역이 포함되어 있습니다.");
+        }
 
-        //planBookLog 삭제(1개)
-        repo_book_log.deleteById(planLogId);
+        int totalDeletedChapters = 0;
 
-        //planBook update(1개)
-        planBook.updatePreStatus(readChapterCnt);
+        // 3. 메모리 상에서 검증 및 총 삭제 장수(Chapters) 계산
+        for (ReadingPlanBookLog planBookLog : planBookLogs) {
+            // 각 로그의 소유권 검증
+            if (!planBookLog.isOwner())
+            {
+                throw new AccessDeniedException("접근 권한이 없습니다.");
+            }
 
-        //plan update(1개)
+
+            int start = planBookLog.getStartChapter();
+            int end = planBookLog.getEndChapter();
+            int readChapterCnt = (end - start)+1;
+            if (readChapterCnt < 1) throw new IllegalArgumentException("삭제할 데이터 중 잘못된 값이 존재합니다.");
+
+            totalDeletedChapters += readChapterCnt;
+
+        }
+
+        // 4. DB 일괄 삭제 (Bulk Delete) 실행
+        // 4-1. read_log 테이블 일괄 삭제 (In 절 활용 추천)
+        repo_read_log.deleteByUserIdAndPlanLogIdIn(userId, planLogIds);
+
+        // 4-2. planBookLog 테이블 일괄 삭제
+        repo_book_log.deleteAllByIdInBatch(planLogIds);
+
+
+        // 5. 부모 엔티티(PlanBook, Plan) 상태 업데이트
+        //planBook update(n개) : planBookLog에서 삭제한 장수만큼 PlanBook에 읽은 장 수 update
+        int updatedCnt = planBook.getReadChaptersCnt() - totalDeletedChapters;
+        if (updatedCnt < 0) throw new IllegalArgumentException("삭제할 데이터 중 잘못된 값이 존재합니다. 관리자에게 문의해주세요.");
+
+        if (updatedCnt == 0)
+        {
+            //읽은 총 장수만큼 삭제할 경우 repoBook도 삭제한다.
+            repo_book.deleteById(planBookId);
+        }
+        else
+        {
+            planBook.updatePreStatus(updatedCnt);
+        }
+
+        //plan update(1개) : Plan이 완료된 경우 '진행'으로 변경
         if (plan.getStatus() == PlanStatus.COMPLETED)
         {
             plan.updatePreStatus();
         }
-
     }
 }

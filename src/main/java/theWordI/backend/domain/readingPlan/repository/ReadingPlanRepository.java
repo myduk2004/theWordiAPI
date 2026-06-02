@@ -16,7 +16,7 @@ public interface ReadingPlanRepository extends JpaRepository<ReadingPlan, Long> 
 
     List<ReadingPlan> findByUserId(Long userId, Pageable pageable);
 
-    @Query("select MAX(r.readCount) FROM ReadingPlan r WHERE r.userId = :userId")
+    @Query("select COALESCE(MAX(r.readCount), 0) FROM ReadingPlan r WHERE r.userId = :userId")
     int findMaxReadCount(@Param("userId") Long userId);
 
 

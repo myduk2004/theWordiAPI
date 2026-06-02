@@ -82,10 +82,10 @@ public class ReadingPlanController {
 
     //읽은 책 로그 삭제 (Id별 삭제)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{planId}/books/{planBookId}/logs/{planLogId}")
-    public void deletePlanBookLogById(@PathVariable Long planId, @PathVariable Long planBookId, @PathVariable Long planLogId)
+    @DeleteMapping("/{planId}/{planBookId}/logs")
+    public void deletePlanBookLogById(@PathVariable Long planId, @PathVariable Long planBookId, @RequestParam("planLogIds") List<Long> planLogIds)
     {
-        plan_svc.deletePlanBookLogById(planId, planBookId, planLogId);
+        plan_svc.deletePlanBookLogById(planId, planBookId, planLogIds);
     }
 
 
