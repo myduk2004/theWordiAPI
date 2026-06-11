@@ -11,10 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.UUID;
 
-@Service
-@RequiredArgsConstructor
+//@Service  임시막음
+//@RequiredArgsConstructor
 public class FileService {
-
+/*
     private final ObjectStorage objectStorage;
 
     @Value("${oci.bucket-name}")
@@ -51,5 +51,5 @@ public class FileService {
         //4. 저장된 객체의 접근 URL 반환
         // 형식: https://objectstorage.{region}.oraclecloud.com/n/{namespace}/b/{bucket}/o/{objectName}
         return baseUrl + fileName;
-    }
+    }*/
 }

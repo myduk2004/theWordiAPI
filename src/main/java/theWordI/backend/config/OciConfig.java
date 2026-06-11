@@ -14,10 +14,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-
-@Configuration
+//사용안함
+//@Configuration
 public class OciConfig {
-
+/*
     @Value("${oci.user}") private String user;
     @Value("${oci.fingerprint}") private String fingerprint;
     @Value("${oci.tenancy}") private String tenancy;
@@ -43,5 +43,5 @@ public class OciConfig {
         return ObjectStorageClient.builder()
                 .build(provider);
     }
-
+*/
 }

@@ -16,25 +16,25 @@ import java.util.Map;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class FileController {
-
-    private final FileService fileService;
-
-    @PostMapping("/upload")
-    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
-    {
-        if (file.isEmpty())
-        {
-            return ResponseEntity.badRequest().body("파일이 없습니다.");
-        }
-
-        try {
-            String imageUrl = fileService.upload(file);
-            return ResponseEntity.ok(Map.of("url", imageUrl));
-        }
-        catch(IOException e)
-        {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 중 오류가 발생했습니다.");
-        }
-    }
+// 임시막음
+//    private final FileService fileService;
+//
+//    @PostMapping("/upload")
+//    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
+//    {
+//        if (file.isEmpty())
+//        {
+//            return ResponseEntity.badRequest().body("파일이 없습니다.");
+//        }
+//
+//        try {
+//            String imageUrl = fileService.upload(file);
+//            return ResponseEntity.ok(Map.of("url", imageUrl));
+//        }
+//        catch(IOException e)
+//        {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 중 오류가 발생했습니다.");
+//        }
+//    }
 
 }
