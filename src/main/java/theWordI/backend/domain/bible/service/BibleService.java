@@ -34,7 +34,7 @@ public class BibleService {
     @Transactional(readOnly = true)
     public List<BibleVersion> getVersionAll()
     {
-        return versionRepository.findByIsUsedOrderByOrderNoAsc(1);
+        return versionRepository.findByIsUsedOrderByOrderNoAsc(true);
     }
 
 

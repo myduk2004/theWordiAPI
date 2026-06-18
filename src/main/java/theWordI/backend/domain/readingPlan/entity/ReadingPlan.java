@@ -38,11 +38,11 @@ public class ReadingPlan {
     private String versionId;
 
 
-    @Column(name="read_count", columnDefinition = "smallint")
+    @Column(name="read_count")
     private int readCount;
 
 
-    @Column(name="book_count", columnDefinition = "smallint")
+    @Column(name="book_count")
     private int bookCount;
 
     @Column(name="title")

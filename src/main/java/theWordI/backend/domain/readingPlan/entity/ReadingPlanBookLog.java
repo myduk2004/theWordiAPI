@@ -41,16 +41,16 @@ public class ReadingPlanBookLog {
     @NotNull
     private Long userId;
 
-    @Column(name="book_id", columnDefinition = "smallint")
+    @Column(name="book_id")
     @NotNull
     private Integer bookId;
 
 
-    @Column(name="start_chapter", columnDefinition = "smallint")
+    @Column(name="start_chapter")
     @NotNull
     private int startChapter;
 
-    @Column(name="end_chapter", columnDefinition = "smallint")
+    @Column(name="end_chapter")
     @NotNull
     private int endChapter;
 

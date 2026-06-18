@@ -6,6 +6,6 @@ import theWordI.backend.domain.bible.entity.BibleVersion;
 import java.util.List;
 
 public interface BibleVersionRepository extends JpaRepository<BibleVersion, String> {
-    List<BibleVersion> findByIsUsedOrderByOrderNoAsc(Integer isUsed);
+    List<BibleVersion> findByIsUsedOrderByOrderNoAsc(Boolean isUsed);
 
 }

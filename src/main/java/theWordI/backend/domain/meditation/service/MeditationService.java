@@ -46,7 +46,7 @@ public class MeditationService {
                     .mapToObj(i -> MeditationVerse.builder()
                             .meditationId(meditationId)
                             .verseId(verseIds.get(i))
-                            .orderNo((short) (i + 1))
+                            .orderNo(i + 1)
                             .build())
                     .collect(Collectors.toList());
             verse_repository.saveAll(verses);
@@ -80,7 +80,7 @@ public class MeditationService {
                     .mapToObj(i -> MeditationVerse.builder()
                             .meditationId(meditationId)
                             .verseId(verseIds.get(i))
-                            .orderNo((short) (i + 1))
+                            .orderNo(i + 1)
                             .build())
                     .collect(Collectors.toList());
 

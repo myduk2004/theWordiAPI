@@ -16,7 +16,7 @@ public class ReadingPlanBookResponse {
     private Integer readChaptersCnt;
     private PlanStatus status;
     private String nameKo;
-    private Short chapterCount;
+    private Integer chapterCount;
     private LocalDate startDt;
     private LocalDate endDt;
     private Integer maxChapterNum;

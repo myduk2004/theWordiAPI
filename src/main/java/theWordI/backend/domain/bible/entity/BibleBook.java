@@ -33,10 +33,8 @@ public class BibleBook {
     private String bookAbbr;
 
     @Column(name="chapter_count")
-    private Short chapterCount;
+    private Integer chapterCount;
 
-    @Column(name="status")
-    private Byte status;
 
     @Column(name="upd_dt")
     private LocalDateTime updDt;

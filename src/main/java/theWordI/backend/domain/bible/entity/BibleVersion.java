@@ -36,10 +36,10 @@ public class BibleVersion {
     private String styleOrigin;
 
     @Column(name="order_no")
-    private Short orderNo;
+    private Integer orderNo;
 
     @Column(name="is_used")
-    private Short isUsed;
+    private Boolean isUsed;
 
     @Column(name = "is_standard")
     private Boolean isStandard;

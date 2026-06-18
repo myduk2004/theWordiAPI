@@ -29,7 +29,7 @@ public class MeditationVerse {
     private Long verseId;
 
     @Column(name="order_no")
-    private Short orderNo;
+    private Integer orderNo;
 
     @Column(name="reg_dt", updatable = false)
     @CreatedDate

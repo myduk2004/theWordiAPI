@@ -37,16 +37,16 @@ public class ReadingPlanBook {
     private Long userId;
 
     @NotNull
-    @Column(name="book_id", columnDefinition = "smallint")
+    @Column(name="book_id")
     private Integer bookId;
 
     @NotNull
-    @Column(name="total_chapters", columnDefinition = "smallint")
+    @Column(name="total_chapters")
     private Integer totalChapters;
 
 
     @Builder.Default
-    @Column(name="read_chapters_cnt", columnDefinition = "smallint default 0")
+    @Column(name="read_chapters_cnt")
     private Integer readChaptersCnt = 0;
 
     @Builder.Default
