@@ -111,8 +111,9 @@ public class SecurityConfig {
                         .requestMatchers("/jwt/exchange", "/jwt/refresh").permitAll()  //인증관련
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/reading-plans", "/reading-plans/**").permitAll()
-                        .requestMatchers("/headerVerse", "/headerVerse/**").permitAll()
+                        .requestMatchers("/header", "/header/**").permitAll()
                         .requestMatchers("/api/**").permitAll()
+
 
                         .requestMatchers(HttpMethod.POST,"/user/create").permitAll()
 

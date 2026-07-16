@@ -2,8 +2,6 @@ package theWordI.backend.domain.headerVerse.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import theWordI.backend.domain.user.auth.CustomUserPrincipal;
 
-import java.sql.SQLOutput;
 import java.util.Map;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,13 +41,14 @@ class HeaderVerseServiceTest {
                 "USER",
                 Map.of()
         );
+
     }
  
 
     @Test
     @DisplayName("헤더 성경구절 조회")
     public void getHeaderVerses() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/headerVerse")
+        MvcResult mvcResult = mockMvc.perform(get("/header/titles")
                         .with(user(mockUser()))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)

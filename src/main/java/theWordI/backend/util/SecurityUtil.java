@@ -32,6 +32,14 @@ public class SecurityUtil {
     }
 
 
+    public static Long getUserIdExc()
+    {
+        return getUser()
+                .map(CustomUserPrincipal::getUserId)
+                .orElse(null);
+    }
+
+
     public static Optional<String> getUserName()
     {
         return getUser().map(CustomUserPrincipal::getUsername);
