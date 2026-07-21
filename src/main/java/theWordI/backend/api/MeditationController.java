@@ -3,10 +3,8 @@ package theWordI.backend.api;
 
 import jakarta.validation.Valid;
 
-import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -16,10 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import theWordI.backend.domain.meditation.dto.MeditationCreateRequest;
 import theWordI.backend.domain.meditation.dto.MeditationListResponse;
-import theWordI.backend.domain.meditation.dto.MeditationListResponse2;
 import theWordI.backend.domain.meditation.dto.MeditationUpdateRequest;
 import theWordI.backend.domain.meditation.entity.Meditation;
 import theWordI.backend.domain.meditation.service.MeditationService;
+import theWordI.backend.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -32,6 +30,8 @@ import java.util.Map;
 public class MeditationController {
 
     private final MeditationService service;
+
+
     @GetMapping
     public ResponseEntity<Slice<MeditationListResponse>> getMeditations(
             @RequestParam(required = false) String title,
@@ -41,9 +41,17 @@ public class MeditationController {
             Pageable pageable
     )
     {
-        Slice<MeditationListResponse> response = service.getMeditations(title, text, startDate, endDate, pageable);
+        Slice<MeditationListResponse> response = service.getMyMeditations(title, startDate, endDate, pageable);
         return ResponseEntity.ok().body(response);
     }
+
+    @GetMapping("/{meditationId}")
+    public ResponseEntity<Meditation> findMyMeditation(@PathVariable Long meditationId) {
+        Meditation meditation = service.getMyMeditation(meditationId);
+
+        return ResponseEntity.ok().body(meditation);
+    }
+
 
     @PostMapping("/create")
     public ResponseEntity<Map<String, Long>> createMeditation(@Valid @RequestBody MeditationCreateRequest dto) {
@@ -51,15 +59,6 @@ public class MeditationController {
         Map<String, Long> result = Collections.singletonMap("meditationId", meditationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
-
-    @GetMapping("/{meditationId}")
-    public ResponseEntity<Meditation> getMeditation(@PathVariable Long meditationId) {
-        Meditation meditation = service.getMeditation(meditationId)
-                .orElseThrow(() -> new NotFoundException("데이터가 존재하지 않습니다."));
-
-        return ResponseEntity.ok().body(meditation);
-    }
-
 
 
     @PutMapping("/update")
@@ -69,9 +68,12 @@ public class MeditationController {
         return ResponseEntity.ok().body(result);
     }
 
+
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/delete/{meditationId}")
     public void deleteMeditation(@PathVariable Long meditationId) {
         service.delete(meditationId);
     }
+
 }

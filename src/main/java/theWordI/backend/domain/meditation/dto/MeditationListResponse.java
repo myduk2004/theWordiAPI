@@ -6,7 +6,9 @@ public interface MeditationListResponse {
 
     Long getMeditationId();
     String getTitle();
-    String getText();
+    String getBibleText();
+    String getEtcText();
+    String getEtcSource();
     LocalDate getMeditationDt();
 
 }

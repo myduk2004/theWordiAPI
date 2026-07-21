@@ -28,9 +28,6 @@ public class MeditationVerse {
     @Column(name="verse_id")
     private Long verseId;
 
-    @Column(name="order_no")
-    private Integer orderNo;
-
     @Column(name="reg_dt", updatable = false)
     @CreatedDate
     private LocalDateTime regDt;

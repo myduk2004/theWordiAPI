@@ -50,12 +50,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// oci objectstorage(file upload를 위한)
-	//BOM을 플랫폼으로 선언
-	implementation platform('com.oracle.oci.sdk:oci-java-sdk-bom:3.34.0')
-	//위에서 선언한 BOM이 적절한 버전을 자동으로 매칭
-	implementation 'com.oracle.oci.sdk:oci-java-sdk-objectstorage'
-	implementation 'com.oracle.oci.sdk:oci-java-sdk-common-httpclient-jersey3'
+	implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1'
 
 
 

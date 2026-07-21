@@ -29,21 +29,21 @@ public interface MeditationRepository  extends JpaRepository<Meditation, Long>, 
 
     @Query(value= """
             SELECT meditation_id as meditationId,
-            title,
-            LEFT(REGEXP_REPLACE(text, '</?span[^>]*>', ''), 100) as text,
-            CAST(meditation_dt AS DATE) as meditationDt
+            title as title,
+            bible_text as bibleText,
+            etc_text as etcText,
+            etc_source as etcSource,
+            meditation_dt as meditationDt
             FROM meditation
             WHERE user_id = :userId
             AND (:title IS NULL OR title like  CONCAT('%', :title, '%'))
-            AND (:text IS NULL OR text like  CONCAT('%', :text , '%'))
             AND (:startDt IS NULL OR meditation_dt >= :startDt)
             AND (:endDt IS NULL OR meditation_dt <= :endDt)
-            ORDER BY meditation_dt DESC
+            ORDER BY meditation_dt DESC, meditation_id DESC
             LIMIT :limit OFFSET :offset
             """, nativeQuery = true)
     List<MeditationListResponse> findMeditationList(@Param("userId") Long userId,
                                                      @Param("title") String title,
-                                                     @Param("text") String text,
                                                      @Param("startDt") LocalDate startDt,
                                                      @Param("endDt") LocalDate endDt,
                                                      @Param("limit") int limit,

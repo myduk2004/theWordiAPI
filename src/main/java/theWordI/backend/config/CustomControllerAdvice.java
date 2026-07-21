@@ -6,11 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import theWordI.backend.domain.user.exception.AccountLockedException;
+import theWordI.backend.exception.NotFoundException;
 import theWordI.backend.exception.UnAuthorizedException;
 
 import java.util.HashMap;
@@ -71,10 +73,10 @@ public class CustomControllerAdvice {
 
     //파라미터 누락 요청 시 400로 처리(토큰 refresh처리 안하기 위해)
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<String> handleRuntimeException(Exception  ex) {
+    public ResponseEntity<String> handleMissingParameter(Exception  ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage() + "123");
+                .body(ex.getMessage());
     }
 
     //@Valid 검증 실패 시 발생하는 예외를 처리
@@ -98,6 +100,16 @@ public class CustomControllerAdvice {
         ErrorResponse response = new ErrorResponse("INVALID_INPUT", e.getLocalizedMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e)
+    {
+        ErrorResponse response = new ErrorResponse("NOT_FOUND", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
 

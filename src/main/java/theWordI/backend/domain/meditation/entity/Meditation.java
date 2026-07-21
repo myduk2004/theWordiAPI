@@ -3,6 +3,7 @@ package theWordI.backend.domain.meditation.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
+@DynamicUpdate
 @Table(name="meditation")
 @Getter
 @Builder
@@ -32,17 +34,29 @@ public class Meditation {
     @Column(name="meditation_dt")
     private LocalDate meditationDt;
 
-    @Column(name="title", length = 255)
+    @Column(name="title", length = 200)
     private String title;
 
     @Column(name="text", columnDefinition = "LONGTEXT")
     private String text;
 
+
+    @Column(name="bible_text", columnDefinition = "LONGTEXT")
+    private String bibleText;
+
+
+    @Column(name="etc_text", columnDefinition = "LONGTEXT")
+    private String etcText;
+
+
+    @Column(name="etc_source", length = 200)
+    private String etcSource;
+
     @CreatedDate
     @Column(name="reg_dt", updatable = false)
     private LocalDateTime regDt;
 
-    @LastModifiedDate //수정 시 자동 저장
+    @LastModifiedDate
     @Column(name="upd_dt")
     private LocalDateTime updDt;
 
@@ -50,6 +64,9 @@ public class Meditation {
 
     public void update(LocalDate meditationDt,
                        String title,
+                       String bibleText,
+                       String etcText,
+                       String etcSource,
                        String text)
     {
         if (meditationDt != null)
@@ -62,7 +79,22 @@ public class Meditation {
             this.title = title;
         }
 
-        if (text != null)
+        if (bibleText != null)
+        {
+            this.bibleText = bibleText;
+        }
+
+        if (etcText != null)
+        {
+            this.etcText = etcText;
+        }
+
+        if (etcSource != null)
+        {
+            this.etcSource = etcSource;
+        }
+
+        if (StringUtils.hasText(text))
         {
             this.text = text;
         }

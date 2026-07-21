@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import theWordI.backend.domain.meditation.entity.Meditation;
+import theWordI.backend.util.HtmlSanitizerUtil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,16 +29,24 @@ public class MeditationCreateRequest {
     @NotBlank(message="내용은 필수입니다.")
     private String text;
 
-    private List<Long> verseIds;
+    private String bibleText;
+    private String etcText;
+    private String etcSource;
 
+    private List<Long> verseIds;
 
     //DTO를 entity로 변환
     public Meditation toEntity(Long userId)
     {
+        //엔티티 변환 로직이 dto에 있으므로 sanitize 로직 여기서 적용
+        String cleanHtml = HtmlSanitizerUtil.sanitize(this.text);
         return Meditation.builder()
                 .meditationDt(this.meditationDt)
                 .title(this.title)
-                .text(this.text)
+                .bibleText(this.bibleText)
+                .etcText(this.etcText)
+                .etcSource(this.etcSource)
+                .text(cleanHtml) // sanitize된 HTML만 저장
                 .userId(userId)
                 .build();
     }
