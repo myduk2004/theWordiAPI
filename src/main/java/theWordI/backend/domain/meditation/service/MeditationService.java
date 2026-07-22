@@ -10,10 +10,10 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import theWordI.backend.domain.meditation.dto.MeditationCreateRequest;
-import theWordI.backend.domain.meditation.dto.MeditationListResponse;
-import theWordI.backend.domain.meditation.dto.MeditationListResponse2;
-import theWordI.backend.domain.meditation.dto.MeditationUpdateRequest;
+import theWordI.backend.domain.bible.dto.BibleVerseResponse;
+import theWordI.backend.domain.bible.repository.BibleVerseRepository;
+import theWordI.backend.domain.bible.service.BibleService;
+import theWordI.backend.domain.meditation.dto.*;
 import theWordI.backend.domain.meditation.entity.Meditation;
 import theWordI.backend.domain.meditation.entity.MeditationVerse;
 import theWordI.backend.domain.meditation.repository.MeditationRepository;
@@ -32,23 +32,40 @@ public class MeditationService {
 
     protected final MeditationRepository repository;
     protected  final MeditationVerseRepository verse_repository;
+    protected final BibleService bibleService;
 
-    //명상 기록 조회(1건)
+
+    //묵상 조회(1건)
     public Meditation getMyMeditation(Long meditationId)
     {
         return repository.findByMeditationIdAndUserId(meditationId, SecurityUtil.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 묵상정보가 없습니다."));
     }
 
+    //묵상 + 묵상 구절까지 조회(1건)
+    public MeditationResponse getMyMeditationWithVerses(Long meditationId)
+    {
+        Meditation meditation = getMyMeditation(meditationId);
 
-    //명상 기록 모두 조회(N건)
+        List<Long> verseIds = verse_repository.findVerseIdByMeditationId(meditation.getMeditationId());
+        List<BibleVerseResponse> verses = verseIds.size() > 0?bibleService.getVersesByVerseIds(verseIds):null;
+
+        return MeditationResponse.from(meditation, verses);
+    }
+
+
+    //묵상 기록 모두 조회(N건)
     public Slice<MeditationListResponse> getMyMeditations(String title,
-                                                        LocalDate startDt,
+                                                          String bibleText,
+                                                          String etcText,
+                                                          LocalDate startDt,
                                                         LocalDate endDt,
                                                         Pageable pageable)
     {
         List<MeditationListResponse> list = repository.findMeditationList(SecurityUtil.getUserId(),
                 title,
+                bibleText,
+                etcText,
                 startDt,
                 endDt,
                 pageable.getPageSize() + 1,

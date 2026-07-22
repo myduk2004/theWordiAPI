@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import theWordI.backend.domain.meditation.dto.MeditationCreateRequest;
 import theWordI.backend.domain.meditation.dto.MeditationListResponse;
+import theWordI.backend.domain.meditation.dto.MeditationResponse;
 import theWordI.backend.domain.meditation.dto.MeditationUpdateRequest;
 import theWordI.backend.domain.meditation.entity.Meditation;
 import theWordI.backend.domain.meditation.service.MeditationService;
@@ -33,22 +34,22 @@ public class MeditationController {
 
 
     @GetMapping
-    public ResponseEntity<Slice<MeditationListResponse>> getMeditations(
+    public ResponseEntity<Slice<MeditationListResponse>> getMyMeditations(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String text,
+            @RequestParam(required = false) String bibleText,
+            @RequestParam(required = false) String etcText,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Pageable pageable
     )
     {
-        Slice<MeditationListResponse> response = service.getMyMeditations(title, startDate, endDate, pageable);
+        Slice<MeditationListResponse> response = service.getMyMeditations(title, bibleText, etcText, startDate, endDate, pageable);
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/{meditationId}")
-    public ResponseEntity<Meditation> findMyMeditation(@PathVariable Long meditationId) {
-        Meditation meditation = service.getMyMeditation(meditationId);
-
+    public ResponseEntity<MeditationResponse> getMyMeditationWithVerses(@PathVariable Long meditationId) {
+        MeditationResponse meditation = service.getMyMeditationWithVerses(meditationId);
         return ResponseEntity.ok().body(meditation);
     }
 

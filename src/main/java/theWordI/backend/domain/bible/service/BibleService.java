@@ -87,7 +87,22 @@ public class BibleService {
 
         List<BibleVerseRow> rows = verseRepository.findVerseByVersions(versionIds, bookId, chapter, startVerse, endVerse);
 
+        //2. 조회된 rows를 dto로 가공하여 리턴
+        return buildVerseResponses(rows);
+    }
 
+    // 성경 내용 조회(verseId 목록)
+    public List<BibleVerseResponse> getVersesByVerseIds(List<Long> verseIds)
+    {
+        //1. DB 조회
+        List<BibleVerseRow> rows = verseRepository.findVerseByVerseIds(verseIds);
+
+        //2. 조회된 rows를 dto로 가공하여 리턴
+        return buildVerseResponses(rows);
+    }
+
+    private List<BibleVerseResponse> buildVerseResponses(List<BibleVerseRow> rows)
+    {
         //2. versionId 기준 Grouping(순서유지)
         Map<String, List<BibleVerseRow>> grouped = rows.stream()
                 .collect(Collectors.groupingBy(
@@ -127,8 +142,8 @@ public class BibleService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
-
     }
+
 
     //구절 저장/수정(버전 + 책)
     @Transactional

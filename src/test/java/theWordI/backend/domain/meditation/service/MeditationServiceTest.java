@@ -148,7 +148,8 @@ class MeditationServiceTest {
 
         //given
         String title  = "테스트";
-        String text = "";
+        String bibleText = "";
+        String etcText = "";
         LocalDate startDt = LocalDate.of(2026, 3, 1);
         LocalDate endDt =  LocalDate.of(2026, 3, 31);
         Pageable pageable = PageRequest.of(0, 5);
@@ -158,6 +159,8 @@ class MeditationServiceTest {
         //when
         Slice<MeditationListResponse> meditations = meditationService.getMyMeditations(
                 title,
+                bibleText,
+                etcText,
                 startDt,
                 endDt,
                 pageable
