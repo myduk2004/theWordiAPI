@@ -112,7 +112,8 @@ public class UserEntity {
     }
 
     //회원 엔티티 생성(OAuth 유저)
-    public static UserEntity createSocial(String username, String email, String name, String registrationId)
+    //public static UserEntity createSocial(String username, String email, String name, String registrationId)
+    public static UserEntity createSocial(String username, String email, String name, SocialProviderType socialProviderType)
     {
        return UserEntity.builder()
                 .username(username)
@@ -122,7 +123,7 @@ public class UserEntity {
                 .phone("")
                 .role(UserRoleType.USER)
                 .social(true)
-                .socialProviderType(SocialProviderType.valueOf(registrationId))
+                .socialProviderType(socialProviderType)
                 .locked(false)
                 .build();
     }

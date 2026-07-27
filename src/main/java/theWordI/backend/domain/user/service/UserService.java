@@ -19,6 +19,7 @@ import theWordI.backend.domain.user.dto.UserCreateRequestDTO;
 import theWordI.backend.domain.user.dto.UserSearchRequestDTO;
 import theWordI.backend.domain.user.dto.UserResponseDTO;
 import theWordI.backend.domain.user.dto.UserUpdateRequestDTO;
+import theWordI.backend.domain.user.entity.SocialProviderType;
 import theWordI.backend.domain.user.entity.UserEntity;
 import theWordI.backend.domain.user.repository.UserRepository;
 import theWordI.backend.util.SecurityUtil;
@@ -107,13 +108,15 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
     {
         //부모 메서드 호출
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        String registrationId = userRequest.getClientRegistration().getRegistrationId().toUpperCase();
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         //소셜별 사용자정보 추출
         SocialOAuthAttributes attr = SocialOAuthAttributes.of(registrationId, oAuth2User.getAttributes());
         String username = attr.getUsername();
         String email = attr.getEmail();
         String name = attr.getName();
+        SocialProviderType provider = attr.getProvider();
+
 
         //=== DB 처리 ===
         UserEntity user = userRepository.findByUsernameAndSocial(username, true)
@@ -122,7 +125,7 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
                 return updateSocialUser(e, name, email);
             })
             .orElseGet(() ->
-                createSocialUser(username, email, name, registrationId)
+                createSocialUser(username, email, name, provider)
             );
 
 
@@ -136,10 +139,10 @@ public class UserService extends DefaultOAuth2UserService implements UserDetails
         );
     }
 
-    public UserEntity createSocialUser(String username, String email,String name, String registrationId)
+    public UserEntity createSocialUser(String username, String email,String name, SocialProviderType socialProviderType)
     {
         //신규 유저 추가
-        UserEntity user = UserEntity.createSocial(username, email, name, registrationId);
+        UserEntity user = UserEntity.createSocial(username, email, name, socialProviderType);
         return userRepository.save(user);
     }
 

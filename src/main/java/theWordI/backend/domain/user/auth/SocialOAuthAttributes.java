@@ -33,6 +33,7 @@ public class SocialOAuthAttributes {
         return switch (provider) {
             case NAVER -> fromNaver(attributes);
             case GOOGLE -> fromGoogle(attributes);
+            case KAKAO -> fromKakao(attributes);
             default -> throw new OAuth2AuthenticationException(
                     new OAuth2Error("UNSUPPORTED_PROVIDER"), "지원하지 않는 소셜 로그인입니다."
             );
@@ -47,7 +48,7 @@ public class SocialOAuthAttributes {
         String name = (String) attributes.get("name");
 
         return new SocialOAuthAttributes(
-                "GOOGLE_" + id,
+                id,
                 email,
                 name,
                 SocialProviderType.GOOGLE
@@ -65,10 +66,46 @@ public class SocialOAuthAttributes {
         String name = (String) response.get("name");
 
         return new SocialOAuthAttributes(
-                "NAVER_" + id,
+                id,
                 email,
                 name,
                 SocialProviderType.NAVER
+        );
+    }
+
+
+
+
+    
+    private static SocialOAuthAttributes fromKakao(
+            Map<String, Object> attributes
+    ){
+
+        /* 카카오 응답 형식
+        {
+            "id":3485729348,
+
+           "properties":{
+                "nickname":"김은명"
+            },
+            "kakao_account":{
+                "profile":{
+                    "nickname":"김은명"
+                }
+            }
+        } */
+
+        String id = String.valueOf(attributes.get("id"));
+        Map<String, Object> kakaoAccount =
+                (Map<String, Object>) attributes.get("kakao_account");
+        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+        String name = (String) profile.get("nickname");
+
+        return new SocialOAuthAttributes(
+                id,
+                "",
+                name,
+                SocialProviderType.KAKAO
         );
     }
 }
