@@ -94,7 +94,6 @@ public class ReadingPlan {
     }
 
 
-
     public void updateProceedingPlan(PlanStatus bookStatus)
     {
         if (bookStatus == PlanStatus.COMPLETED)
@@ -105,22 +104,28 @@ public class ReadingPlan {
         this.status = PlanStatus.PROCEEDING;
     }
 
-
-    public void updateCompletePlan()
+    public void updatePlan()
     {
         int newBookCount = this.bookCount + 1;
-        if (TOTAL_BIBLE_BOOKS > newBookCount) return;
-
         this.bookCount = newBookCount;
+
+        if (TOTAL_BIBLE_BOOKS <= newBookCount)
+        {
+            updateCompletePlan(newBookCount);
+        }
+    }
+
+    private void updateCompletePlan(int newBookCount)
+    {
+        //this.bookCount = newBookCount;
         this.status = PlanStatus.COMPLETED;
         this.endDt = LocalDateTime.now();
-
     }
 
     public void updatePreStatus()
     {
         this.status = PlanStatus.PROCEEDING;
-        this.bookCount = (this.bookCount > 1)?this.bookCount-1 : 0;
+        this.bookCount = (this.bookCount > 0)?this.bookCount-1 : 0;
         this.endDt = null;
     }
 

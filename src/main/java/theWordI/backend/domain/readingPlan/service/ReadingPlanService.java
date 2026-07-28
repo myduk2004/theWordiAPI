@@ -231,12 +231,8 @@ public class ReadingPlanService {
         {
             plan.updateProceedingPlan(bookStatus);
         }
-        else
-        {
-            if (bookStatus == PlanStatus.COMPLETED)
-            {
-                plan.updateCompletePlan();
-            }
+        else if (dto.getPlanBookId() > 0 && bookStatus == PlanStatus.COMPLETED) {
+            plan.updatePlan();
         }
 
 
