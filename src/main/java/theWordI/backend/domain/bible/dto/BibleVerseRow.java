@@ -13,6 +13,7 @@ public class BibleVerseRow
     private final int chapter;
     private final int verse;
     private final String text;
+    private final String subTitle;
 
     public BibleVerseRow(
             Long verseId,
@@ -22,7 +23,8 @@ public class BibleVerseRow
             String bookName,
             int chapter,
             int verse,
-            String text
+            String text,
+            String subTitle
     ) {
         this.verseId = verseId;
         this.versionId = versionId;
@@ -32,5 +34,6 @@ public class BibleVerseRow
         this.chapter = chapter;
         this.verse = verse;
         this.text = text;
+        this.subTitle = subTitle;
     }
 }

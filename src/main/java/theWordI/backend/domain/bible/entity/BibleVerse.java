@@ -38,6 +38,9 @@ public class BibleVerse {
     @Column(name="text", length = 2000)
     private String text;
 
+    @Column(name="sub_title")
+    private String subTitle;
+
     @Column(name="reg_id", nullable = false, updatable = false)
     private Long regId;
 

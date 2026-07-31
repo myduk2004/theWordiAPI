@@ -23,7 +23,8 @@ public interface BibleVerseRepository extends JpaRepository<BibleVerse, Long> {
             c.nameKo,
             b.chapter,
             b.verse,
-            b.text
+            b.text,
+            b.subTitle
             )
             from BibleVersion a
             join BibleBook c on a.versionId = c.id.versionId
@@ -54,7 +55,8 @@ public interface BibleVerseRepository extends JpaRepository<BibleVerse, Long> {
             c.nameKo,
             b.chapter,
             b.verse,
-            b.text
+            b.text,
+            b.subTitle
             )
             from BibleVersion a
             join BibleBook c on a.versionId = c.id.versionId

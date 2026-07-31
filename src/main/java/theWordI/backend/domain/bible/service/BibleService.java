@@ -133,7 +133,8 @@ public class BibleService {
                                             r.getBookName(),
                                             r.getChapter(),
                                             r.getVerse(),
-                                            r.getText()
+                                            r.getText(),
+                                            r.getSubTitle()
                                     ))
                                     .toList();
 

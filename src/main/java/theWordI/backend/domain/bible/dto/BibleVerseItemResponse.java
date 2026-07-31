@@ -5,5 +5,6 @@ public record BibleVerseItemResponse(Long verseId,
                                      String bookName,
                                      int chapter,
                                      int verse,
-                                     String text) {
+                                     String text,
+                                     String subTitle) {
 }
